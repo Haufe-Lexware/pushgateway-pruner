@@ -1,0 +1,47 @@
+#!groovy
+
+properties([
+        parameters([
+            string(
+                name: 'RELEASE_TAG',
+                defaultValue: '',
+                description: 'The GitHub release tag to build, WITHOUT the v, e.g. "0.1.0"'
+                required: true
+            ),
+            string(
+                name: 'IMAGE_NAME',
+                defaultValue: 'haufelexware/pushgateway-pruner',
+                description: 'The image to build; must contain the registry if applicable',
+                required: true
+            ),
+            string(
+                name: 'REGISTRY',
+                defaultValue: '',
+                description: 'Docker registry to push to, leave blank for Docker Hub',
+                required: false
+            ),
+            choice(
+                name: 'CREDENTIALS_ID',
+                choices: 'Some-Credential\nSome-other-credential',
+                description: 'The Jenkins credentials id to use for the docker registry',
+                required: true
+            ),
+        ]),
+        [$class: 'RebuildSettings', autoRebuild: false, rebuildDisabled: false]
+])
+
+node('docker') {
+    stage ('Clone Code') {
+        sh 'git clone https://github.com/DonMartin76/pushgateway-pruner'
+    }
+
+    stage ('Build and Push Image') {
+        withCredentials([
+            usernamePassword(credentialsId: params.CREDENTIALS_ID, usernameVariable: 'REGISTRY_USERNAME', passwordVariable: 'REGISTRY_PASSWORD')
+        ]) {
+            env.REGISTRY = params.REGISTRY
+
+            sh 'pushd pushgateway-pruner && ./build/build-release ' + params.RELEASE_TAG + ' ' + params.IMAGE_NAME + ' && popd'
+        }
+    }
+}
