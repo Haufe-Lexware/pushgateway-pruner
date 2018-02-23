@@ -27,7 +27,7 @@ echo "Downloading source for release tag $1..."
 echo "======================================================================="
 
 mkdir -p ./release/${releaseTag}
-curl -L -o ./release/${releaseTag}/release.tgz https://github.com/DonMartin76/pushgateway-pruner/archive/v${releaseTag}.tar.gz
+curl -L -o ./release/${releaseTag}/release.tgz https://github.com/Haufe-Lexware/pushgateway-pruner/archive/v${releaseTag}.tar.gz
 
 echo "======================================================================="
 echo "Unpacking source and building docker image"

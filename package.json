@@ -1,6 +1,6 @@
 {
   "name": "pushgateway-pruner",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Daemon which regularly queries a Prometheus Pushgateway and prunes groupings which have not been pushed for a certain amount of time.",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DonMartin76/pushgateway-pruner.git"
+    "url": "git+https://github.com/Haufe-Lexware/pushgateway-pruner.git"
   },
   "keywords": [
     "Prometheus",
@@ -17,12 +17,12 @@
     "Instance",
     "Prune"
   ],
-  "author": "Martin Danielsson <martin@danielsson.de>",
+  "author": "Martin Danielsson <martin.danielsson@haufe-lexware.com>",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/DonMartin76/pushgateway-pruner/issues"
+    "url": "https://github.com/Haufe-Lexware/pushgateway-pruner/issues"
   },
-  "homepage": "https://github.com/DonMartin76/pushgateway-pruner#readme",
+  "homepage": "https://github.com/Haufe-Lexware/pushgateway-pruner#readme",
   "dependencies": {
     "async": "2.6.0",
     "prom-client": "10.2.2",
