@@ -5,23 +5,28 @@ properties([
             string(
                 name: 'RELEASE_TAG',
                 defaultValue: '',
-                description: 'The GitHub release tag to build, WITHOUT the v, e.g. "0.1.0"'
+                description: 'The GitHub release tag to build, WITHOUT the v, e.g. "0.1.0"',
                 required: true
             ),
             string(
                 name: 'IMAGE_NAME',
+                // TODO: Specify your own image name here
                 defaultValue: 'haufelexware/pushgateway-pruner',
                 description: 'The image to build; must contain the registry if applicable',
                 required: true
             ),
             string(
                 name: 'REGISTRY',
+                // TODO: Might make sense to fill in your default registry here
                 defaultValue: '',
                 description: 'Docker registry to push to, leave blank for Docker Hub',
                 required: false
             ),
             choice(
                 name: 'CREDENTIALS_ID',
+                // TODO: Add your own credential IDs here
+                // If somebody knows how to just get a list of Jenkins credentials automatically
+                // here, please tell me how that works.
                 choices: 'Some-Credential\nSome-other-credential',
                 description: 'The Jenkins credentials id to use for the docker registry',
                 required: true
@@ -32,6 +37,8 @@ properties([
 
 node('docker') {
     stage ('Clone Code') {
+        sh 'if [ -d pushgateway-pruner ]; then rm -rf pushgateway-pruner; fi'
+        // TODO: If you want to build from your own fork, change this
         sh 'git clone https://github.com/DonMartin76/pushgateway-pruner'
     }
 
@@ -40,8 +47,7 @@ node('docker') {
             usernamePassword(credentialsId: params.CREDENTIALS_ID, usernameVariable: 'REGISTRY_USERNAME', passwordVariable: 'REGISTRY_PASSWORD')
         ]) {
             env.REGISTRY = params.REGISTRY
-
-            sh 'pushd pushgateway-pruner && ./build/build-release ' + params.RELEASE_TAG + ' ' + params.IMAGE_NAME + ' && popd'
+            sh 'pushd pushgateway-pruner && ./build/build-release.sh ' + params.RELEASE_TAG + ' ' + params.IMAGE_NAME + ' && popd'
         }
     }
 }
