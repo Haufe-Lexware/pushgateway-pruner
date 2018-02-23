@@ -30,6 +30,7 @@ Env var | Default | Description
 `PUSHGATEWAY_URL` | `http://localhost:9091` | The URL of the Pushgateway API
 `PRUNE_INTERVAL` | 60 | Interval in which stale groupings are checked for, in seconds
 `PRUNE_THRESHOLD` | 600 | Age threshold after which a grouping is pruned, in seconds
+`DEBUG` | (empty) | Specify `true` to get debug messages into the logs
 
 ## Deployment
 
