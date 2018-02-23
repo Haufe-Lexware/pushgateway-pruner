@@ -6,7 +6,7 @@ If you have dealt with Pushgateway more than just superficially, you will have r
 
 What you do then is that you use "groupings" when you push to the Pushgateway, and this is when things get stupid.
 
-Imagine you have two instances pushing data to your Pushgateway, let's call them `A` and `B`; they each push to their own "instance grouping", using the `:9090/metrics/job/<job_name>/instance/<instance_name>` end point, i.e. `:9090/metrics/job/monitor/instance/A` and `/B`.
+Imagine you have two instances pushing data to your Pushgateway, let's call them `A` and `B`; they each push to their own "instance grouping", using the `:9091/metrics/job/<job_name>/instance/<instance_name>` end point, i.e. `:9091/metrics/job/monitor/instance/A` and `/B`.
 
 Now instance `A` dies, and instead instance (read: Pod ID or some other unique identifier) `C` comes into life and starts pushing metrics. Pushgateway will (until it dies for whatever reason) happily expose the metrics of `A` for eternity even if `A` hasn't pushed any metrics for ages. This can lead to certain unwanted effects, such as non-existing instances affecting the current averages of the other instances.
 
