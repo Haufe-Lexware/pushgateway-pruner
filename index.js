@@ -136,8 +136,13 @@ function deleteGrouping(grouping, callback) {
     const labelName = findLabelName(grouping.labels)
     if (!labelName)
         return new Error(`Grouping from job ${job} does not have suitable labels (e.g. instance)`)
+    const labelValue = grouping.labels[labelName]
+    if (!labelValue) {
+        logger.info(`Did not delete grouping from job ${job} because value of label ${labelName} is empty.`)
+        return callback(null)
+    }
 
-    const url = `${PUSHGATEWAY_URL}metrics/job/${job}/${labelName}/${grouping.labels[labelName]}`
+    const url = `${PUSHGATEWAY_URL}metrics/job/${job}/${labelName}/${labelValue}`
     logger.debug(`Delete URL: ${url}`)
     request.delete({
         url: url,
