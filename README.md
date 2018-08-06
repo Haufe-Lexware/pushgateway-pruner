@@ -118,7 +118,7 @@ The [Jenkinsfile](build/Jenkinsfile) contains a couple of `TODO` marks where you
 
 # Development
 
-Prereqs: Node 8, npm 5.
+Prereqs: Node 10, npm 6.
 
 Short intro:
 
