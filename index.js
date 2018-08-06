@@ -142,7 +142,7 @@ function deleteGrouping(grouping, callback) {
         return callback(null)
     }
 
-    const url = `${PUSHGATEWAY_URL}metrics/job/${job}/${labelName}/${labelValue}`
+    const url = PUSHGATEWAY_URL + encodeURIComponent(`metrics/job/${job}/${labelName}/${labelValue}`)
     logger.debug(`Delete URL: ${url}`)
     request.delete({
         url: url,
