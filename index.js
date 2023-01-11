@@ -133,16 +133,22 @@ function deleteGrouping(grouping, callback) {
 
     const job = grouping.labels.job
     // This will most probably be "instance"
-    const labelName = findLabelName(grouping.labels)
-    if (!labelName)
+    const labelNames = findLabelName(grouping.labels)
+    if (labelNames.length === 0)
         return new Error(`Grouping from job ${job} does not have suitable labels (e.g. instance)`)
-    const labelValue = grouping.labels[labelName]
-    if (!labelValue) {
-        logger.info(`Did not delete grouping from job ${job} because value of label ${labelName} is empty.`)
+    // 这里对 label 相关的内容进行拼接处理
+    var labelUrls = `metrics/job/${job}`
+    for (const labelName of labelNames) {
+        const labelValue = grouping.labels[labelName]
+        logger.debug('labelValue', labelValue,'labelName', labelName)
+        labelUrls = labelUrls + encodeURIComponent(`/${labelName}/${labelValue}`)
+    }
+    if (!labelUrls) {
+        logger.info(`Did not delete grouping from job ${job} because value of label ${labelNames} is empty.`)
         return callback(null)
     }
 
-    const url = PUSHGATEWAY_URL + encodeURIComponent(`metrics/job/${job}/${labelName}/${labelValue}`)
+    const url = PUSHGATEWAY_URL + labelUrls
     logger.debug(`Delete URL: ${url}`)
     request.delete({
         url: url,
@@ -169,12 +175,14 @@ function deleteGrouping(grouping, callback) {
 }
 
 function findLabelName(labels) {
+    // 这里调整为返回列表
+    const __labels = []
     for (let propName in labels) {
         if (propName === 'job')
             continue
-        return propName
+        __labels.push(propName)
     }
-    return null
+    return __labels
 }
 
 setInterval(pruneGroups, INTERVAL_SECONDS * 1000)
