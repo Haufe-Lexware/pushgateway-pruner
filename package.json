@@ -3,9 +3,6 @@
   "version": "0.1.2",
   "description": "Daemon which regularly queries a Prometheus Pushgateway and prunes groupings which have not been pushed for a certain amount of time.",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Haufe-Lexware/pushgateway-pruner.git"
@@ -23,11 +20,20 @@
     "url": "https://github.com/Haufe-Lexware/pushgateway-pruner/issues"
   },
   "homepage": "https://github.com/Haufe-Lexware/pushgateway-pruner#readme",
+  "engines": {
+    "npm": ">=9.0.0",
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
-    "async": "2.6.0",
-    "prom-client": "10.2.2",
-    "request": "2.87.0",
-    "winston": "2.4.0"
+    "axios": "1.5.1",
+    "prom-client": "15.0.0",
+    "winston": "3.11.0"
+  },
+  "devDependencies": {
+    "jest": "29.7.0"
   },
   "jshintConfig": {
     "esversion": 6,

@@ -1,12 +1,10 @@
-'use strict';
-
 const winston = require('winston')
 
 let logLevel = process.env.DEBUG == 'true' ? 'debug' : 'info'
 
-const logger = new (winston.Logger)({
+const logger = winston.createLogger({
     transports: [
-        new (winston.transports.Console)({
+        new winston.transports.Console({
             level: logLevel,
             timestamp: function () {
                 return (new Date()).toISOString();
@@ -16,6 +14,6 @@ const logger = new (winston.Logger)({
             stringify: (obj) => JSON.stringify(obj)
         })
     ]
-})
+});
 
 module.exports = logger;
