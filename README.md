@@ -25,12 +25,12 @@ Looking at the example from above, this means that the metrics of instance `A` w
 
 Pass in the following configuration as environment variables
 
-Env var | Default | Description
---------|---------|------------
-`PUSHGATEWAY_URL` | `http://localhost:9091` | The URL of the Pushgateway API
-`PRUNE_INTERVAL` | 60 | Interval in which stale groupings are checked for, in seconds
-`PRUNE_THRESHOLD` | 600 | Age threshold after which a grouping is pruned, in seconds
-`DEBUG` | (empty) | Specify `true` to get debug messages into the logs
+| Env var           | Default                 | Description                                                   |
+|-------------------|-------------------------|---------------------------------------------------------------|
+| `PUSHGATEWAY_URL` | `http://localhost:9091` | The URL of the Pushgateway API                                |
+| `PRUNE_INTERVAL`  | 60                      | Interval in which stale groupings are checked for, in seconds |
+| `PRUNE_THRESHOLD` | 600                     | Age threshold after which a grouping is pruned, in seconds    |
+| `DEBUG`           | (empty)                 | Specify `true` to get debug messages into the logs            |
 
 ## Deployment
 
@@ -118,7 +118,7 @@ The [Jenkinsfile](build/Jenkinsfile) contains a couple of `TODO` marks where you
 
 # Development
 
-Prereqs: Node 10, npm 6.
+Prereqs: Node 18, npm 8.
 
 Short intro:
 
@@ -140,4 +140,5 @@ $ docker build -t <your tag here> .
 
 ## Tests
 
-Yes, tests would be good. There aren't any right now. But this thing actually works.
+We recognize the importance of testing our code to ensure its reliability and functionality. 
+For this, we have begun implementing some basic tests using Jest to verify that this project works as intended. As development progresses, we will continue to expand our test suite to provide comprehensive test coverage.
