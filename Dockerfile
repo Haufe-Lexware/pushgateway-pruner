@@ -10,4 +10,4 @@ RUN npm install
 
 COPY . /usr/src/app
 
-CMD ["node", "index.js"]
+CMD ["node", "src/index.js"]

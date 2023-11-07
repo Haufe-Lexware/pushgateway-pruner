@@ -110,6 +110,18 @@ The `build-release.sh` script does the following:
 
 Call the script without parameters for a description.
 
+### MAC Troubleshooting
+
+When building the image using a MAC with M1 or M2, you may find that the execution of the image generates errors. 
+This is because the platform is incorrect when building the image. 
+To solve this issue, you need to export the following environment variable before performing the build:
+
+```
+export DOCKER_DEFAULT_PLATFORM=linux/amd64
+```
+
+With this adjustment, the image should be built correctly.
+
 ### Jenkinsfile
 
 We have also provided a sample `Jenkinsfile` which you can use to build the project **for a specific release, from source code** on your own Jenkins infrastructure. Please note: These scripts all download the code from **this** repository on GitHub; in case you want to build from a different fork, you will need to do a couple of adaptions.
