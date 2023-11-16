@@ -1,38 +1,28 @@
-'use strict'
-
 const axios = require('axios')
 const logger = require('./logger')
 
-let PUSHGATEWAY_URL = resolve('PUSHGATEWAY_URL', 'http://localhost:9091')
-if (!PUSHGATEWAY_URL.endsWith('/'))
-    PUSHGATEWAY_URL += '/'
-logger.info(`Pushgateway URL: ${PUSHGATEWAY_URL}`)
+const METRIC_NAME = 'push_time_seconds';
 
-const INTERVAL_SECONDS = resolve('PRUNE_INTERVAL', 60)
-const PRUNE_THRESHOLD_SECONDS = resolve('PRUNE_THRESHOLD', 600)
-logger.info(`Prune interval: ${INTERVAL_SECONDS} seconds.`)
-logger.info(`Prune threshold: ${PRUNE_THRESHOLD_SECONDS} seconds.`)
-
-async function pruneGroups() {
+async function pruneGroups(pushgatewayUrl, pruneThresholdSeconds) {
     logger.info('Starting prune process...');
 
     // Get metrics request from Prometheus push gateway
     let metrics = null;
     try {
-        metrics = await getMetrics(PUSHGATEWAY_URL);
+        metrics = await getMetrics(pushgatewayUrl);
     } catch (e) {
-        throw new Error(`GET /metrics from ${PUSHGATEWAY_URL} failed. Cause: ${e}`)
+        throw new Error(`GET /metrics from ${pushgatewayUrl} failed. Cause: ${e}`)
     }
 
     // Get 'push_time_seconds' groups and filter the ones that are above pruneThresholdSeconds
     const groupings = parseGroupings(metrics)
-    const filteredGroupings = filterOldGroupings(groupings)
+    const filteredGroupings = filterOldGroupings(groupings, pruneThresholdSeconds)
     logger.info(`Found ${groupings.length} grouping(s), of which ${filteredGroupings.length} will be pruned`)
 
     if (filteredGroupings.length > 0) {
         filteredGroupings.map((filteredGroup) => {
                 try {
-                    deleteGrouping(filteredGroup)
+                    deleteGrouping(filteredGroup, pushgatewayUrl)
                 } catch (e) {
                     logger.error(`Pruning group ${filteredGroup} failed.`)
                 }
@@ -57,9 +47,9 @@ function resolve(envVar, defaultValue) {
     return defaultValue
 }
 
-async function getMetrics() {
+async function getMetrics(pushgatewayUrl) {
     logger.debug('getMetrics()')
-    const getMetricsResponse = await axios.get(PUSHGATEWAY_URL + 'metrics', {
+    const getMetricsResponse = await axios.get(pushgatewayUrl + 'metrics', {
         timeout: 2000
     });
 
@@ -81,7 +71,7 @@ function parseGroupings(metrics) {
     const pushGroups = []
     for (let i = 0; i < lines.length; ++i) {
         const line = lines[i]
-        if (line.startsWith("push_time_seconds")) {
+        if (line.startsWith(METRIC_NAME)) {
             const labels = parseLabels(line.substring(line.indexOf('{') + 1, line.indexOf('}')))
             const timestamp = new Date(parseFloat(line.substring(line.indexOf('}') + 1).trim()) * 1000)
             pushGroups.push({
@@ -113,12 +103,12 @@ function parseLabels(labels) {
     return labelMap
 }
 
-function filterOldGroupings(groupings) {
+function filterOldGroupings(groupings, pruneThresholdSeconds) {
     logger.debug('filterOldGroupings()');
     const filteredGroupings = []
     const now = new Date()
     for (let i = 0; i < groupings.length; ++i) {
-        if ((now - groupings[i].timestamp) > PRUNE_THRESHOLD_SECONDS * 1000) {
+        if ((now - groupings[i].timestamp) > pruneThresholdSeconds * 1000) {
             filteredGroupings.push(groupings[i])
         }
     }
@@ -127,7 +117,7 @@ function filterOldGroupings(groupings) {
     return filteredGroupings
 }
 
-async function deleteGrouping(grouping) {
+async function deleteGrouping(grouping, pushgatewayUrl) {
     logger.debug('deleteGrouping()', grouping)
 
     const job = grouping.labels.job
@@ -141,7 +131,7 @@ async function deleteGrouping(grouping) {
         return;
     }
 
-    const url = PUSHGATEWAY_URL + encodeURIComponent(`metrics/job/${job}/${labelName}/${labelValue}`)
+    const url = pushgatewayUrl + encodeURIComponent(`metrics/job/${job}/${labelName}/${labelValue}`)
     logger.debug(`Delete URL: ${url}`)
     const deleteResponse = await axios.delete(url, {
         timeout: 2000
@@ -159,7 +149,6 @@ async function deleteGrouping(grouping) {
 
     logger.debug(`DELETE ${url} succeeded, status code ${deleteResponse.status}`)
     logger.info('Deleted grouping', grouping.labels)
-    return;
 }
 
 function findLabelName(labels) {
@@ -171,9 +160,8 @@ function findLabelName(labels) {
     return null
 }
 
-const interval = setInterval(pruneGroups, INTERVAL_SECONDS * 1000)
-
 module.exports = {
+    resolve,
     pruneGroups,
-    interval
+    parseLabels
 }

@@ -1,6 +1,6 @@
 const winston = require('winston')
 
-let logLevel = process.env.DEBUG == 'true' ? 'debug' : 'info'
+let logLevel = process.env.DEBUG === 'true' ? 'debug' : 'info'
 
 const logger = winston.createLogger({
     transports: [
