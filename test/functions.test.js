@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { resolve, pruneGroups, parseLabels } = require('./../src/functions')
+const { resolve, pruneGroups, parseLabels, findFirstNonJobLabel } = require('./../src/functions')
 
 jest.mock('axios');
 
@@ -153,6 +153,36 @@ describe('Functions test', () => {
             const responseValue = parseLabels(stringLabels);
 
             expect(responseValue).toEqual(expectedValue);
+        });
+    });
+
+    describe('Find first non "job" label tests', () => {
+        test('should return the first non-"job" label name', () => {
+            const labels1 = { job: 'Developer', department: 'IT' };
+            expect(findFirstNonJobLabel(labels1)).toBe('department');
+
+            const labels2 = { job: 'Manager', location: 'Office' };
+            expect(findFirstNonJobLabel(labels2)).toBe('location');
+        });
+
+        test('should return the first non-"job" label name among multiple labels', () => {
+            const labels = { job: 'Developer', department: 'IT', location: 'Remote', team: 'Frontend' };
+            expect(findFirstNonJobLabel(labels)).toBe('department');
+        });
+
+        test('should return null if there are no non-"job" labels', () => {
+            const labels = { job: 'Designer' };
+            expect(findFirstNonJobLabel(labels)).toBeNull();
+        });
+
+        test('should return null for an empty object', () => {
+            const labels = {};
+            expect(findFirstNonJobLabel(labels)).toBeNull();
+        });
+
+        test('should handle objects with "job" property at the end', () => {
+            const labels = { department: 'HR', job: 'Recruiter' };
+            expect(findFirstNonJobLabel(labels)).toBe('department');
         });
     });
 })
