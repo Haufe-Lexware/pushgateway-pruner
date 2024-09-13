@@ -1,6 +1,6 @@
 {
   "name": "pushgateway-pruner",
-  "version": "0.1.2",
+  "version": "0.2.1",
   "description": "Daemon which regularly queries a Prometheus Pushgateway and prunes groupings which have not been pushed for a certain amount of time.",
   "main": "index.js",
   "repository": {
