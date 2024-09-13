@@ -47,7 +47,10 @@ node('docker') {
             usernamePassword(credentialsId: params.CREDENTIALS_ID, usernameVariable: 'REGISTRY_USERNAME', passwordVariable: 'REGISTRY_PASSWORD')
         ]) {
             env.REGISTRY = params.REGISTRY
-            sh 'pushd pushgateway-pruner && ./build/build-release.sh ' + params.RELEASE_TAG + ' ' + params.IMAGE_NAME + ' && popd'
+            sh """
+                cd pushgateway-pruner
+                ./build/build-release.sh ${params.RELEASE_TAG} ${params.IMAGE_NAME}
+            """
         }
     }
 }
